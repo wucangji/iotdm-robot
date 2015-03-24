@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generated="20150324 12:35:30.913" generator="Robot 2.8.7 (Python 2.7.8 on darwin)">
+<suite source="/Users/josstewa/robot/ex1/iotdm.tsv" id="s1" name="Iotdm">
+<test id="s1-t1" name="Basic CRUD Test">
+<kw type="kw" name="${server} = iotdm.Connect To Ddm">
+<doc></doc>
+<arguments>
+<arg>${host}</arg>
+<arg>${user}</arg>
+<arg>${pw}</arg>
+<arg>${proto}</arg>
+</arguments>
+<msg timestamp="20150324 12:35:30.950" level="INFO">${server} = &lt;ddm.connect instance at 0x10bfff488&gt;</msg>
+<status status="PASS" endtime="20150324 12:35:30.950" starttime="20150324 12:35:30.949"></status>
+</kw>
+<kw type="kw" name="${ae} = iotdm.Create Resource">
+<doc>Create Resource</doc>
+<arguments>
+<arg>${server}</arg>
+<arg>InCSE1</arg>
+<arg>AE</arg>
+</arguments>
+<msg timestamp="20150324 12:35:30.960" level="INFO">${ae} = InCSE1/10024</msg>
+<status status="PASS" endtime="20150324 12:35:30.960" starttime="20150324 12:35:30.950"></status>
+</kw>
+<kw type="kw" name="${container} = iotdm.Create Resource">
+<doc>Create Resource</doc>
+<arguments>
+<arg>${server}</arg>
+<arg>${ae}</arg>
+<arg>container</arg>
+</arguments>
+<msg timestamp="20150324 12:35:30.963" level="INFO">${container} = InCSE1/10024/20022</msg>
+<status status="PASS" endtime="20150324 12:35:30.963" starttime="20150324 12:35:30.960"></status>
+</kw>
+<kw type="kw" name="${contentinstance} = iotdm.Create Resource">
+<doc>Create Resource</doc>
+<arguments>
+<arg>${server}</arg>
+<arg>${container}</arg>
+<arg>contentInstance</arg>
+<arg>content</arg>
+<arg>my content</arg>
+</arguments>
+<msg timestamp="20150324 12:35:30.967" level="INFO">${contentinstance} = InCSE1/10024/20022/30022</msg>
+<status status="PASS" endtime="20150324 12:35:30.967" starttime="20150324 12:35:30.964"></status>
+</kw>
+<kw type="kw" name="${json} = iotdm.Retrieve Resource">
+<doc>Retrieve Resource</doc>
+<arguments>
+<arg>${server}</arg>
+<arg>${ae}</arg>
+</arguments>
+<msg timestamp="20150324 12:35:30.969" level="INFO">${json} = {u'output': {u'responseStatusCode': 2002, u'ResourceOutput': [{u'resourceType': u'AE', u'resourceID': u'1609248731', u'Attributes': [{u'attributeName': u'resourceID', u'attributeValue': u'1609248731'}...</msg>
+<status status="PASS" endtime="20150324 12:35:30.969" starttime="20150324 12:35:30.968"></status>
+</kw>
+<kw type="kw" name="${json} = iotdm.Retrieve Resource">
+<doc>Retrieve Resource</doc>
+<arguments>
+<arg>${server}</arg>
+<arg>${container}</arg>
+</arguments>
+<msg timestamp="20150324 12:35:30.971" level="INFO">${json} = {u'output': {u'responseStatusCode': 2002, u'ResourceOutput': [{u'resourceType': u'container', u'resourceID': u'20022', u'Attributes': [{u'attributeName': u'resourceID', u'attributeValue': u'1233799432...</msg>
+<status status="PASS" endtime="20150324 12:35:30.971" starttime="20150324 12:35:30.969"></status>
+</kw>
+<kw type="kw" name="${json} = iotdm.Retrieve Resource">
+<doc>Retrieve Resource</doc>
+<arguments>
+<arg>${server}</arg>
+<arg>${contentinstance}</arg>
+</arguments>
+<msg timestamp="20150324 12:35:30.973" level="INFO">${json} = {u'output': {u'responseStatusCode': 2002, u'ResourceOutput': [{u'resourceType': u'contentInstance(latest-allAttributes)', u'resourceID': u'30022', u'Attributes': [{u'attributeName': u'resourceID', u'a...</msg>
+<status status="PASS" endtime="20150324 12:35:30.973" starttime="20150324 12:35:30.971"></status>
+</kw>
+<kw type="kw" name="iotdm.Update Resource">
+<doc>Update Resource</doc>
+<arguments>
+<arg>${server}</arg>
+<arg>${ae}</arg>
+<arg>labels</arg>
+<arg>my ae label</arg>
+</arguments>
+<msg timestamp="20150324 12:35:30.976" level="INFO">uri /InCSE1/10024?from=http://localhost:10000&amp;requestIdentifier=12345
+head {'Content-Type': 'application/json', 'Accept': 'application/json'}
+body 
+		{
+			"from": "http://localhost:10000",
+			"requestIdentifier": "12345",
+			"content": {
+				"labels": "my ae label"
+
+			}
+		}</msg>
+<status status="PASS" endtime="20150324 12:35:30.976" starttime="20150324 12:35:30.973"></status>
+</kw>
+<kw type="kw" name="iotdm.Update Resource">
+<doc>Update Resource</doc>
+<arguments>
+<arg>${server}</arg>
+<arg>${container}</arg>
+<arg>labels</arg>
+<arg>my container label</arg>
+</arguments>
+<msg timestamp="20150324 12:35:30.979" level="INFO">uri /InCSE1/10024/20022?from=http://localhost:10000&amp;requestIdentifier=12345
+head {'Content-Type': 'application/json', 'Accept': 'application/json'}
+body 
+		{
+			"from": "http://localhost:10000",
+			"requestIdentifier": "12345",
+			"content": {
+				"labels": "my container label"
+
+			}
+		}</msg>
+<status status="PASS" endtime="20150324 12:35:30.979" starttime="20150324 12:35:30.976"></status>
+</kw>
+<kw type="kw" name="iotdm.Delete Resource">
+<doc>Delete Resource</doc>
+<arguments>
+<arg>${server}</arg>
+<arg>${contentinstance}</arg>
+</arguments>
+<status status="PASS" endtime="20150324 12:35:30.982" starttime="20150324 12:35:30.980"></status>
+</kw>
+<kw type="kw" name="iotdm.Delete Resource">
+<doc>Delete Resource</doc>
+<arguments>
+<arg>${server}</arg>
+<arg>${container}</arg>
+</arguments>
+<status status="PASS" endtime="20150324 12:35:30.986" starttime="20150324 12:35:30.983"></status>
+</kw>
+<kw type="kw" name="iotdm.Delete Resource">
+<doc>Delete Resource</doc>
+<arguments>
+<arg>${server}</arg>
+<arg>${ae}</arg>
+</arguments>
+<status status="PASS" endtime="20150324 12:35:30.987" starttime="20150324 12:35:30.986"></status>
+</kw>
+<doc></doc>
+<tags>
+</tags>
+<status status="PASS" endtime="20150324 12:35:30.988" critical="yes" starttime="20150324 12:35:30.948"></status>
+</test>
+<doc></doc>
+<metadata>
+</metadata>
+<status status="PASS" endtime="20150324 12:35:30.988" starttime="20150324 12:35:30.914"></status>
+</suite>
+<statistics>
+<total>
+<stat fail="0" pass="1">Critical Tests</stat>
+<stat fail="0" pass="1">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat fail="0" pass="1" id="s1" name="Iotdm">Iotdm</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
