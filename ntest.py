@@ -17,33 +17,8 @@ def ishex(c):
 		return True
 	return False
 
-_hex = {
-	'0': 0,
-	'1': 1,
-	'2': 2,
-	'3': 3,
-	'4': 4,
-	'5': 5,
-	'6': 6,
-	'7': 7,
-	'8': 8,
-	'9': 9,
-	'a': 10,
-	'b': 11,
-	'c': 12,
-	'd': 13,
-	'e': 14,
-	'f': 15,
-	'A': 10,
-	'B': 11,
-	'C': 12,
-	'D': 13,
-	'E': 14,
-	'F': 15,
-}
-
 def hextodec(c):
-	return _hex[c]
+	return int(c, 16)
 
 # states
 # 0 = look for 1st \r
@@ -108,7 +83,7 @@ class parse:
 				self.temp = self.temp + c
 		elif self.state == step.HEAD1:
 			if c == '\n':
-				self.head.append(self.temp)
+				self.head.append(self.temp.lower())
 				self.temp = ""
 				self.state = step.HEAD2
 			else:
@@ -122,9 +97,18 @@ class parse:
 		elif self.state == step.HEAD3:
 			if c == '\n':
 				# look at header for chunked or content-length here
-				# assuming chunked BAD
-				self.state = step.HEX0
-				self.ignore = 0
+				for i in range(0,len(self.head)):
+					print i, self.head[i]
+					if self.head[i].find("content-length"):
+						print "FOUND CONTENT-LENGTH"
+					#	self.state = step.EAT0
+					#	self.ignore = 0 # get len from header BAD
+					if self.head[i].find("transfer-encoding"):
+						print "FOUND TRANSFER-ENCODING"
+						if self.head[i].find("chunked"):
+							print "CHUNKED"
+							self.state = step.HEX0
+							self.ignore = 0
 			else:
 				self.state = step.HEAD0
 		elif self.state == step.HEX0:
@@ -176,7 +160,11 @@ while n.inputs:
 			if more == False:
 				break
 	if what == "timeout":
+		print "timeout"
 		break
 	if more == False:
 		s.show()
+		print "buffer => {"
+		print buffer
+		print "}"
 		s.clean()
