@@ -39,7 +39,7 @@ def http_retrieve(conn, id):
 		return (None, e)
 	return get(conn)
 
-def http_create(conn, parent, restype, attr):
+def http_make_attr(attr):
 	a = ""
 	if attr != None:
 		n = len(attr)
@@ -50,6 +50,10 @@ def http_create(conn, parent, restype, attr):
 				sep = ""
 			a = a + '"%s": "%s"%s\n' % (i, attr[i], sep)
 			c = c + 1
+	return a
+
+def http_create(conn, parent, restype, attr):
+	a = http_make_attr(attr)
 	uri = "/%s?from=http://localhost:10000&requestIdentifier=12345" % (parent)
 	head = {"Content-Type": "application/json", "Accept": "application/json"}
 	body = '''
@@ -72,16 +76,7 @@ def http_create(conn, parent, restype, attr):
 	return get(conn)
 
 def http_update(conn, id, attr):
-	a = ""
-	if attr != None:
-		n = len(attr)
-		sep = ","
-		c = 1
-		for i in attr:
-			if n == c:
-				sep = ""
-			a = a + '"%s": "%s"%s\n' % (i, attr[i], sep)
-			c = c + 1
+	a = http_make_attr(attr)
 	uri = "/%s?from=http://localhost:10000&requestIdentifier=12345" % (id)
 	head = {"Content-Type": "application/json", "Accept": "application/json"}
 	body = '''
@@ -301,7 +296,7 @@ def meta(r):
 # This is the object constructor for a new connection to a DDM server
 
 class connect:
-	def __init__(self, server="localhost:8181", user="admin", pw="admin", proto="restconf"):
+	def __init__(self, server="localhost:8181", user="admin", pw="admin", protocol="restconf"):
 		"""Connect to a DDM server over-rideable defaults"""
 		bu = base64.b64encode(user + ":" + pw).decode("ascii")
 		self.head = {
@@ -310,7 +305,7 @@ class connect:
 			"Authorization" : "Basic %s" %
 				base64.b64encode(user + ":" + pw).decode("ascii")
 		}
-		self.proto = proto
+		self.protocol = protocol
 		self.server = server
 		self.user = user
 		self.pw = pw
@@ -359,7 +354,7 @@ class connect:
 						fn(attr['parentID'], attr['resourceName'], "contentInstance", x, token)
 	def create(self, parent, restype, attr=None):
 		"""Create a new resource as a child of the given resource ID with the optional attribute name/value pair dictionary"""
-		if self.proto == "http":
+		if self.protocol == "http":
 			(self.result,self.error) = http_create(self.conn, parent, restype, attr)
 		else:
 			self.body = make_create(parent, restype, attr)
@@ -367,7 +362,7 @@ class connect:
 		return self.result
 	def retrieve(self, id, Disrestype=None, ResultContent=None):
 		"""Retrieve resource ID optionally with non-hierarchal output and/or child information"""
-		if self.proto == "http":
+		if self.protocol == "http":
 			(self.result,self.error) = http_retrieve(self.conn, id)
 		else:
 			self.body = make_retrieve(id, Disrestype, ResultContent)
@@ -375,7 +370,7 @@ class connect:
 		return self.result
 	def update(self, id, attr=None):
 		"""Update resource ID with attribute name/value pairs in the provided dictionary"""
-		if self.proto == "http":
+		if self.protocol == "http":
 			(self.result,self.error) = http_update(self.conn, id, attr)
 		else:
 			self.body = make_update(id, attr)
@@ -383,7 +378,7 @@ class connect:
 		return self.result
 	def delete(self, id):
 		"""Delete the resource with the provided ID"""
-		if self.proto == "http":
+		if self.protocol == "http":
 			(self.result,self.error) = http_delete(self.conn, id)
 		else:
 			self.body = make_delete(id)
