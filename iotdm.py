@@ -4,7 +4,7 @@ import nserver
 def connect_to_ddm(host, user, pw, p):
 	return ddm.connect(host, user, pw, protocol=p)
 
-def new_notification_server(ip,port):
+def new_notification_server(ip, port):
 	return nserver.server(ip, int(port))
 
 def read_notifications(n, howlong):

@@ -13,85 +13,84 @@ def internal_create(ip,port):
 	server.listen(5)
 	return server
 
-
 class server:
-	def __init__(self, ip="localhost", port=10000):
-		self.canned_header = "HTTP/1.0 %s\r\nServer: iotdm-robot\r\nContent-Length: %d\r\nConnection: close\r\nContent-Type: %s\r\n\r\n%s"
-		self.canned_bare = "ok"
-		self.canned_okay = self.canned_header % ("200 OK", len(self.canned_bare), "text/plain", self.canned_bare)
-
+	def __init__(self, ip="localhost", port=10000, bsize=4096):
+		self.header = "HTTP/1.0 %s\r\nServer: iotdm-robot\r\nContent-Length: %d\r\nConnection: close\r\nContent-Type: %s\r\n\r\n%s"
+		self.body = "ok"
+		self.response = self.header % ("200 OK", len(self.body), "text/plain", self.body)
 		self.server = internal_create(ip, port)
-
 		self.inputs = [ self.server ]
 		self.outputs = []
 		self.message_queues = {}
+		self.bsize = bsize
 
-	# (what,who,data)
-	# ("timeout", None, None)
-	# ("read", (ip, port), data)
+	# what wait() returns
+	# (what,      who,        data)
+	# ("timeout", None,       None)
+	# ("read",    (ip, port), data)
 
 	def wait(self, secs):
 		what = None
-		rdata = None
-		rwho = None
+		who = None
+		data = None
 		readable, writable, exceptional = select.select(self.inputs, self.outputs, self.inputs, secs)
 		if not (readable or writable or exceptional):
-			#print >>sys.stderr, 'timed out'
 			return ("timeout", None, None)
+
+		# handle socket input
 		for s in readable:
 			if s is self.server:
+				# we have a new client
 				connection, client_address = s.accept()
-				#print >>sys.stderr, 'new connection from', client_address
+				# make non-blocking since we don't know how much to read/recv
 				connection.setblocking(0)
+				# put this socket in the input list for select
 				self.inputs.append(connection)
-				# Give the connection a queue for data we want to send
+				# make a queue for outgoing data
 				self.message_queues[connection] = Queue.Queue()
-				# stuff response into queue
-				self.message_queues[connection].put(self.canned_okay)
+				# put OK response into queue (in this case, it's a full HTTP response)
+				self.message_queues[connection].put(self.response)
 			else:
-				data = s.recv(4096)
-				if data:
+				# receive data from existing client
+				d = s.recv(self.bsize)
+				if d:
+					# accumulate data
 					what = "data"
-					if rdata == None:
-						rdata = data
+					if data == None:
+						data = d
 					else:
-						rdata = rdata + data
-					rwho = s.getpeername()
-					#print >>sys.stderr, 'received %d bytes from %s' % (len(data), s.getpeername())
-					#self.message_queues[s].put(data)
-					# Add output channel for response
+						data = data + d
+					who = s.getpeername()
+					# make sure this socket is in the output array for select
 					if s not in self.outputs:
 						self.outputs.append(s)
 				else:
-					# Interpret empty result as closed connection
+					# if recv failed, the socket is probably closed, so clean-up
 					if s in self.outputs:
 						self.outputs.remove(s)
 					self.inputs.remove(s)
 					s.close()
 					del self.message_queues[s]
 
+		# handle socket output
 		for s in writable:
 			try:
+				# see if there's any queued data present/remaining
 				next_msg = self.message_queues[s].get_nowait()
 			except Queue.Empty:
-				#print >>sys.stderr, 'output queue for', s.getpeername(), 'is empty'
+				# when the queue is empty, clean-up
 				self.outputs.remove(s)
 			else:
-				#print >>sys.stderr, 'sending %d bytes to %s' % (len(next_msg), s.getpeername())
+				# this is where the queue stuff gets sent to client
 				s.send(next_msg)
 
-		# Handle "exceptional conditions"
+		# handle select "exceptions"
 		for s in exceptional:
-			# Stop listening for input on the connection
+			# clean-up
 			self.inputs.remove(s)
 			if s in self.outputs:
 				self.outputs.remove(s)
 			s.close()
-
-			# Remove message queue
 			del self.message_queues[s]
 
-		return (what, rwho, rdata)
-
-#while inputs:
-#	print "::", wait(30)
+		return (what, who, data)
