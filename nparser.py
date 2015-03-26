@@ -49,9 +49,10 @@ class parse:
 		self.body = ""
 
 	def __init__(self):
+		#print "parse.__init__"
 		self.clean()
 
-	def process(self, c):
+	def _process(self, c):
 		##### look for 1st \r\n = RESPONSE
 		if self.state == step.RESP0:
 			if c == '\r':
@@ -86,17 +87,21 @@ class parse:
 				self.state = step.HEAD0
 		elif self.state == step.HEAD3:
 			if c == '\n':
+				#print "header done"
 				# look at header for chunked or content-length here
 				for i in range(0,len(self.head)):
-					print i, self.head[i]
-					if self.head[i].find("content-length"):
-						print "FOUND CONTENT-LENGTH"
-					#	self.state = step.EAT0
-					#	self.ignore = 0 # get len from header BAD
-					if self.head[i].find("transfer-encoding"):
-						print "FOUND TRANSFER-ENCODING"
+					#print i, self.head[i]
+					if self.head[i].find("content-length") >= 0:
+						#print "FOUND CONTENT-LENGTH"
+						self.state = step.EAT0
+						self.ignore = 0 # get len from header BAD
+						break
+					#                     transfer-encoding
+					if self.head[i].find("transfer-encoding") >= 0:
+						#print "FOUND transfer-encoding"
+						#                     chunked
 						if self.head[i].find("chunked"):
-							print "CHUNKED"
+							#print "CHUNKED"
 							self.state = step.HEX0
 							self.ignore = 0
 			else:
@@ -115,6 +120,7 @@ class parse:
 			if c == '\n':
 				#print "chunk done", self.ignore
 				if self.ignore <= 0:
+					#print "body done"
 					return False
 				self.state = step.EAT0
 		##### ignore everything until we've read self.ignore characters
@@ -125,6 +131,12 @@ class parse:
 				self.ignore = 0
 				self.state = step.HEX0
 		return True
+
+	def process(self, data):
+		#print "parse.process"
+		for i in range(0,len(data)):
+			if self._process(data[i]) == False:
+				return False
 
 	def show(self):
 		print "RESP =>", self.response

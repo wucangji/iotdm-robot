@@ -8,7 +8,7 @@ c = ddm.connect("localhost:8282", protocol="http")
 
 ae = ddm.id(c.create("InCSE1", "AE"))
 co = ddm.id(c.create(ae, "container"))
-x = c.create(co, "subscription", {"notificationURI":"http://localhost:10000", "notificationContentType":"wholeResource"})
+x = c.create(co, "subscription", {"notificationURI":"http://localhost:20000", "notificationContentType":"wholeResource"})
 print x
 su = ddm.id(x)
 ci = ddm.id(c.create(co, "contentInstance", {"content": "102"}))

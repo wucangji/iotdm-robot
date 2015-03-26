@@ -1,5 +1,7 @@
 import ddm
 import nserver
+import nparser
+import time
 
 def connect_to_ddm(host, user, pw, p):
 	return ddm.connect(host, user, pw, protocol=p)
@@ -7,15 +9,31 @@ def connect_to_ddm(host, user, pw, p):
 def new_notification_server(ip, port):
 	return nserver.server(ip, int(port))
 
-def read_notifications(n, howlong):
-	a = ""
-	while n.inputs:
-		(what, who, data) = n.wait(int(howlong))
+def read_notifications(n, timeout):
+	p = nparser.parse()
+	timeout = float(timeout)
+	mark = time.time() + timeout
+	more = True
+	while True:
+		now = time.time()
+		if now > mark:
+			break
+		newtimeout = mark - now
+		(what, who, data) = n.wait(newtimeout)
+		if what == "error":
+			return
 		if what == "data":
-			a = a + data
+			more = p.process(data)
+			if more == False:
+				break
 		if what == "timeout":
 			break
-	return a
+		if more == False:
+			break
+	return p.body
+
+def close_notification_server(n):
+	n.close()
 
 def create_resource(c, parent, restype, key=None, val=None):
 	"""Create Resource"""

@@ -7,22 +7,46 @@ import Queue
 
 def internal_create(ip,port):
 	server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	server.setblocking(0)
 	server_address = (ip, port)
 	server.bind(server_address)
 	server.listen(5)
 	return server
 
+def internal_close(s):
+	try:
+		s.shutdown(socket.SHUT.RDWR)
+	except:
+		pass
+		#print "ic:s[0]", s
+	try:
+		s.close()
+	except:
+		pass
+		#print "ic:c[1]", s
+
 class server:
 	def __init__(self, ip="localhost", port=10000, bsize=4096):
+		try:
+			self.server = internal_create(ip, port)
+		except:
+			return
 		self.header = "HTTP/1.0 %s\r\nServer: iotdm-robot\r\nContent-Length: %d\r\nConnection: close\r\nContent-Type: %s\r\n\r\n%s"
 		self.body = "ok"
 		self.response = self.header % ("200 OK", len(self.body), "text/plain", self.body)
-		self.server = internal_create(ip, port)
 		self.inputs = [ self.server ]
 		self.outputs = []
 		self.message_queues = {}
 		self.bsize = bsize
+
+	def close(self):
+		if hasattr(self, 'inputs'):
+			for i in range(0, len(self.inputs)):
+				internal_close(self.inputs[i])
+		if hasattr(self, 'outputs'):
+			for i in range(0, len(self.outputs)):
+				internal_close(self.outputs[i])
 
 	# what wait() returns
 	# (what,      who,        data)
@@ -30,6 +54,8 @@ class server:
 	# ("read",    (ip, port), data)
 
 	def wait(self, secs):
+		if not hasattr(self, 'inputs'):
+			return ("error", None, None)
 		what = None
 		who = None
 		data = None
@@ -46,10 +72,15 @@ class server:
 				connection.setblocking(0)
 				# put this socket in the input list for select
 				self.inputs.append(connection)
-				# make a queue for outgoing data
-				self.message_queues[connection] = Queue.Queue()
-				# put OK response into queue (in this case, it's a full HTTP response)
-				self.message_queues[connection].put(self.response)
+				
+				if True:
+					# make a queue for outgoing data
+					self.message_queues[connection] = Queue.Queue()
+					# put OK response into queue (in this case, it's a full HTTP response)
+					self.message_queues[connection].put(self.response)
+				else:
+					s.send(self.response)
+
 			else:
 				# receive data from existing client
 				d = s.recv(self.bsize)

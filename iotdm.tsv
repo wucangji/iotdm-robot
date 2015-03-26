@@ -36,3 +36,4 @@ Basic Subscription Test
 	Create Subscription	${iserver}	${ncontainer}	${nip}	${nport}
 	${contentinstance} =	Create Resource	${iserver}	${ncontainer}	"contentInstance"	"content"	"my content"
 	${ndata} =	Read Notifications	${nserver}	${ntimeout}
+	Close Notification Server	${nserver}
