@@ -127,12 +127,16 @@ def make_delete(id):
 
 def make_update(id, attr=None):
 	"""Construct a JSON message to update the given resource ID with the attribute name/value pairs in the given dictionary"""
-	if id == None:
+	if id == None or attr == None:
 		return None
 	attrib = ""
+	sep = ","
+	n = len(attr)
 	if type(attr) is dict:
 		for i in attr:
-			attrib = attrib + '{ "attributeName": "%s", "attributeValue": "%s" },' % (i, attr[i])
+			if n == 1:
+				sep = ""
+			attrib = attrib + '{ "attributeName": "%s", "attributeValue": "%s" }%s' % (i, attr[i], sep)
 	return '{ "input": { "Attributes": [ %s ], "resourceURI": "%s" } }' % (attrib, id)
 
 def make_retrieve(id, Disrestype=None, ResultContent=None):
@@ -151,30 +155,29 @@ def make_retrieve(id, Disrestype=None, ResultContent=None):
 
 def make_create(id, restype, attr=None):
 	"""Construct a JSON message to create a new resource as a child of the given resource ID with the optional attribute name/value pair dictionary"""
-	if id == None:
+	if id == None or restype == None:
 		return None
-	if restype == None:
-		return None
+	if attr == None:
+		attr = {}
+	attr['resourceType'] = restype
 	attrib = ""
-	if type(attr) is dict:
-		for i in attr:
-			attrib = attrib + '{ "attributeName": "%s", "attributeValue": "%s" },' % (i, attr[i])
+	sep = ","
+	n = len(attr)
+	for i in attr:
+		if n == 1:
+			sep = ""
+		attrib = attrib + '{ "attributeName": "%s", "attributeValue": "%s" }%s' % (i, attr[i], sep)
+		n = n - 1
 	return '''
 	{
 		"input": {
 			"Attributes": [
-				{ "attributeName": "resourceType", "attributeValue": "%s" },
 				%s
 			],
 			"resourceURI": "%s"
 		}
 	}
-	''' % (restype, attrib, id)
-
-#!/usr/bin/python
-
-import ddm
-import sys
+	''' % (attrib, id)
 
 def _find(parentid, id, restype, x, token):
 	if not 'Attributes' in x['output']['ResourceOutput'][0]:

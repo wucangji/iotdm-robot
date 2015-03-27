@@ -35,18 +35,18 @@ def read_notifications(n, timeout):
 def close_notification_server(n):
 	n.close()
 
-def create_resource(c, parent, restype, key=None, val=None):
+def create_resource(c, parent, restype, attr=None):
 	"""Create Resource"""
-	x = None
-	if key == None or val == None:
+	if attr == None:
 		x = c.create(parent, restype)
 	else:
-		x = c.create(parent, restype, {key: val})
+		x = c.create(parent, restype, attr)
 	if x == None:
-		print "error", c.error
+		print "error", c.error, c.head, c.body
 		raise AssertionError('Cannot create this resource')
 	return ddm.id(x)
 
+# this might not be necessary now that the library functions can take dicts
 
 def create_subscription(c, parent, ip, port):
 	"""Create Subscription"""
@@ -65,9 +65,9 @@ def retrieve_resource(c, id):
 		raise AssertionError('Cannot retrieve this resource')
 	return x
 
-def update_resource(c, id, key, val):
+def update_resource(c, id, attr):
 	"""Update Resource"""
-	x = c.update(id, {key: val})
+	x = c.update(id, attr)
 	if x == None:
 		print "error", c.error
 		raise AssertionError('Cannot update this resource')

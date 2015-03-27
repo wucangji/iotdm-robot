@@ -7,7 +7,7 @@ n = iotdm.new_notification_server("localhost", 30000)
 ae = iotdm.create_resource(c, "InCSE1", "AE")
 co = iotdm.create_resource(c, ae, "container")
 iotdm.create_subscription(c, co, "localhost", 30000)
-iotdm.create_resource(c, co, "contentInstance", "contents", "a value")
+iotdm.create_resource(c, co, "contentInstance", {"contents": "a value"})
 d = iotdm.read_notifications(n, 10)
 iotdm.close_notification_server(n)
 print d
