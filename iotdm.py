@@ -42,8 +42,17 @@ def create_resource(c, parent, restype, attr=None):
 	else:
 		x = c.create(parent, restype, attr)
 	if x == None:
-		print "error", c.error, c.head, c.body
-		raise AssertionError('Cannot create this resource')
+		error = ""
+		if hasattr(c, 'error'):
+			#print "error", c.error
+			error = str(c.error) + ";"
+		#if hasattr(c, 'head'):
+		#	print "head", c.head
+		#	error = error + c.head + ";"
+		#if hasattr(c, 'body'):
+		#	print "body", c.body
+		#	error = error + c.body + ";"
+		raise AssertionError('Cannot create this resource: ' + error)
 	return ddm.id(x)
 
 # this might not be necessary now that the library functions can take dicts

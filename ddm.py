@@ -21,6 +21,15 @@ def get(conn):
 		j = None
 	return (j, "%s %s" % (r1.status, r1.reason))
 
+def http_basic(conn, method, id, body):
+	uri = "/%s?from=http://localhost:10000&requestIdentifier=12345" % (id)
+	head = {"Content-Type": "application/json", "Accept": "application/json"}
+	try:
+		conn.request(method, uri, "", head)
+	except Exception as e:
+		return (None, e)
+	return get(conn)
+
 def http_delete(conn, id):
 	uri = "/%s?from=http://localhost:10000&requestIdentifier=12345" % (id)
 	head = {"Content-Type": "application/json", "Accept": "application/json"}
