@@ -89,4 +89,11 @@ def delete_resource(c, id):
 		print "error", c.error
 		raise AssertionError('Cannot delete resource')
 	return x
-	
+
+def invalid_create_resource(c, parent, restype, dictionary=None):
+    x = c.create(parent, restype, dictionary)
+    if x == None:
+        print "success error", c.error
+        return "pass"
+    else:
+        raise AssertionError('Create the wrong resource, this resource should not be created!')
