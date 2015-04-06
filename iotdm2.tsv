@@ -101,7 +101,7 @@ Basic HTTP CRUD Test
 	${attr} =	Create Dictionary	"resourceName"	"container/Name1"
 	${container} =	Invalid Create Resource	${iserver}	${ae}	"container"	${attr}
 	#----cannot add delete here
-	#Delete Resource	${iserver}	${CSEBase}
+	Delete Resource	${iserver}	${CSEBase}
 
 #--------------------------
 
