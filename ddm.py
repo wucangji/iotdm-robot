@@ -3,7 +3,24 @@ import json
 import sys
 import base64
 
+'''
+http
+----
+CREATE is POST to url InCSE1/<parent>?ty=<x>&rcn=1 (x : 3 is container, 4 is contentInstance, ae=ae)
+RETRIEVE is GET to url InCSE1?rcn=5&drt=2
+
+restconf
+--------
+
+
+'''
+
 # head = {"Content-Type": "application/json", "Accept": "application/json"}
+
+AE = "AE"
+CR = "container"
+CI = "contentInstance"
+SU = "subscription"
 
 def get(conn):
 	"""Get the response following a rpc() (http GET or POST) call."""

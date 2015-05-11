@@ -1,13 +1,13 @@
 ***Settings***
-Library	iotdm
+Library	riotdm
 Library	Collections
 
 ***Variable***
-${httphost}	"localhost:8282"
+${httphost}	"localhost"
 ${httpuser}	"admin"
 ${httppass}	"admin"
 
-${resthost}	"localhost:8181"
+${resthost}	"localhost"
 ${restuser}	"admin"
 ${restpass}	"admin"
 
@@ -17,7 +17,7 @@ ${ntimeout}	5
 
 ***Test Cases***
 Basic HTTP CRUD Test
-	${iserver} =	Connect To DDM	${httphost}	${httpuser}	${httppass}	"http"
+	${iserver} =	Connect To IoTDM	${httphost}	${httpuser}	${httppass}	"http"
 	#
 	${ae} =	Create Resource	${iserver}	"InCSE1"	"AE"
 	${container} =	Create Resource	${iserver}	${ae}	"container"
@@ -35,7 +35,7 @@ Basic HTTP CRUD Test
 	Delete Resource	${iserver}	${ae}
 
 Basic HTTP Subscription Test
-	${iserver} =	Connect To DDM	${httphost}	${httpuser}	${httppass}	"http"
+	${iserver} =	Connect To IoTDM	${httphost}	${httpuser}	${httppass}	"http"
 	${nserver} = 	New Notification Server	${nip}	${nport}
 	#
 	${nae} =	Create Resource	${iserver}	"InCSE1"	"AE"
@@ -47,7 +47,7 @@ Basic HTTP Subscription Test
 	Close Notification Server	${nserver}
 
 Basic RESTconf CRUD Test
-	${iserver} =	Connect To DDM	${resthost}	${restuser}	${restpass}	"restconf"
+	${iserver} =	Connect To IoTDM	${resthost}	${restuser}	${restpass}	"restconf"
 	#
 	${ae} =	Create Resource	${iserver}	"InCSE1"	"AE"
 	${container} =	Create Resource	${iserver}	${ae}	"container"
@@ -66,7 +66,7 @@ Basic RESTconf CRUD Test
 
 
 Basic RESTconf Subscription Test
-	${iserver} =	Connect To DDM	${resthost}	${restuser}	${restpass}	"restconf"
+	${iserver} =	Connect To IoTDM	${resthost}	${restuser}	${restpass}	"restconf"
 	${nserver} = 	New Notification Server	${nip}	${nport}
 	#
 	${nae} =	Create Resource	${iserver}	"InCSE1"	"AE"

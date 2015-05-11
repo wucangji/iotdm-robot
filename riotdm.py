@@ -1,10 +1,14 @@
-import ddm
+import iotdm
 import nserver
 import nparser
 import time
 
-def connect_to_ddm(host, user, pw, p):
-	return ddm.connect(host, user, pw, protocol=p)
+ae = iotdm.ae
+container = iotdm.container
+contentInstance = iotdm.contentInstance
+
+def connect_to_iotdm(host, user, pw, p):
+	return iotdm.new(host, base="InCSE1", auth=(user, pw), protocol=p)
 
 def new_notification_server(ip, port):
 	return nserver.server(ip, int(port))
@@ -35,12 +39,13 @@ def read_notifications(n, timeout):
 def close_notification_server(n):
 	n.close()
 
-def create_resource(c, parent, restype, attr=None):
+def create_resource(c, parent, restype, a=None):
 	"""Create Resource"""
-	if attr == None:
+	restype = int(restype)
+	if a == None:
 		x = c.create(parent, restype)
 	else:
-		x = c.create(parent, restype, attr)
+		x = c.create(parent, restype, attr=a)
 	if x == None:
 		error = ""
 		if hasattr(c, 'error'):
@@ -53,7 +58,7 @@ def create_resource(c, parent, restype, attr=None):
 		#	print "body", c.body
 		#	error = error + c.body + ";"
 		raise AssertionError('Cannot create this resource: ' + error)
-	return ddm.id(x)
+	return x
 
 # this might not be necessary now that the library functions can take dicts
 
@@ -64,7 +69,7 @@ def create_subscription(c, parent, ip, port):
 	if x == None:
 		print "error", c.error
 		raise AssertionError('Cannot create subscription')
-	return ddm.id(x)
+	return x
 
 def retrieve_resource(c, id):
 	"""Retrieve Resource"""
@@ -89,6 +94,18 @@ def delete_resource(c, id):
 		print "error", c.error
 		raise AssertionError('Cannot delete resource')
 	return x
+
+def id(x):
+	return iotdm.id(x)
+
+def text(x):
+	return x.text
+
+def json(x):
+	return x.json()
+
+def elapsed(x):
+	return x.elapsed.total_seconds()
 
 def invalid_create_resource(c, parent, restype, dictionary=None):
     x = c.create(parent, restype, dictionary)
