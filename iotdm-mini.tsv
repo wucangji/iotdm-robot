@@ -20,12 +20,14 @@ Basic HTTP CRUD Test
 	${text} =	Text	${r}
 	${json} = 	Json	${r}
 	${elapsed} =	Elapsed	${r}
+	#
 	${r} =	Create Resource	${iserver}	${ae}	${rt_container}
 	${container} =	Id	${r}
 	${status_code} =	Status Code	${r}
 	${text} =	Text	${r}
 	${json} = 	Json	${r}
 	${elapsed} =	Elapsed	${r}
+	#
 	${attr} =	Create Dictionary	"con"	"101"
 	${r} =	Create Resource	${iserver}	${container}	${rt_contentInstance}	${attr}
 	${contentinstance} =	Id	${r}
@@ -33,6 +35,39 @@ Basic HTTP CRUD Test
 	${text} =	Text	${r}
 	${json} = 	Json	${r}
 	${elapsed} =	Elapsed	${r}
+	#
+	${r} =	Retrieve Resource	${iserver}	${ae}
+	${status_code} =	Status Code	${r}
+	${text} =	Text	${r}
+	${json} = 	Json	${r}
+	${elapsed} =	Elapsed	${r}
+	#
+	${r} =	Retrieve Resource	${iserver}	${container}
+	${status_code} =	Status Code	${r}
+	${text} =	Text	${r}
+	${json} = 	Json	${r}
+	${elapsed} =	Elapsed	${r}
+	#
+	${r} =	Retrieve Resource	${iserver}	${contentInstance}
+	${status_code} =	Status Code	${r}
+	${text} =	Text	${r}
+	${json} = 	Json	${r}
+	${elapsed} =	Elapsed	${r}
+	#
 	${r} =	Delete Resource	${iserver}	${contentInstance}
+	${status_code} =	Status Code	${r}
+	${text} =	Text	${r}
+	${json} = 	Json	${r}
+	${elapsed} =	Elapsed	${r}
+	#
 	${r} =	Delete Resource	${iserver}	${container}
+	${status_code} =	Status Code	${r}
+	${text} =	Text	${r}
+	${json} = 	Json	${r}
+	${elapsed} =	Elapsed	${r}
+	#
 	${r} =	Delete Resource	${iserver}	${ae}
+	${status_code} =	Status Code	${r}
+	${text} =	Text	${r}
+	${json} = 	Json	${r}
+	${elapsed} =	Elapsed	${r}
