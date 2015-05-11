@@ -3,18 +3,18 @@ Library	riotdm
 Library	Collections
 
 ***Variable***
-${httphost}	"localhost"
-${httpuser}	"admin"
-${httppass}	"admin"
+${httphost}	localhost
+${httpuser}	admin
+${httppass}	admin
 ${rt_ae}	2
 ${rt_container}	3
 ${rt_contentInstance}	4
 
 ***Test Cases***
 Basic HTTP CRUD Test
-	${iserver} =	Connect To IoTDM	${httphost}	${httpuser}	${httppass}	"http"
+	${iserver} =	Connect To IoTDM	${httphost}	${httpuser}	${httppass}	http
 	#
-	${r} =	Create Resource	${iserver}	"InCSE1"	${rt_ae}
+	${r} =	Create Resource	${iserver}	InCSE1	${rt_ae}
 	${ae} =	Id	${r}
 	${status_code} =	Status Code	${r}
 	${text} =	Text	${r}
@@ -28,7 +28,7 @@ Basic HTTP CRUD Test
 	${json} = 	Json	${r}
 	${elapsed} =	Elapsed	${r}
 	#
-	${attr} =	Create Dictionary	"con"	"101"
+	${attr} =	Create Dictionary	con	101
 	${r} =	Create Resource	${iserver}	${container}	${rt_contentInstance}	${attr}
 	${contentinstance} =	Id	${r}
 	${status_code} =	Status Code	${r}

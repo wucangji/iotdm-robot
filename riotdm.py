@@ -1,6 +1,6 @@
 import iotdm
-import nserver
-import nparser
+#import nserver
+#import nparser
 import time
 
 ae = iotdm.ae
@@ -10,6 +10,7 @@ contentInstance = iotdm.contentInstance
 def connect_to_iotdm(host, user, pw, p):
 	return iotdm.new(host, base="InCSE1", auth=(user, pw), protocol=p)
 
+'''
 def new_notification_server(ip, port):
 	return nserver.server(ip, int(port))
 
@@ -38,6 +39,7 @@ def read_notifications(n, timeout):
 
 def close_notification_server(n):
 	n.close()
+'''
 
 def create_resource(c, parent, restype, a=None):
 	"""Create Resource"""
