@@ -47,17 +47,10 @@ def create_resource(c, parent, restype, a=None):
 	else:
 		x = c.create(parent, restype, attr=a)
 	if x == None:
-		error = ""
-		if hasattr(c, 'error'):
-			#print "error", c.error
-			error = str(c.error) + ";"
-		#if hasattr(c, 'head'):
-		#	print "head", c.head
-		#	error = error + c.head + ";"
-		#if hasattr(c, 'body'):
-		#	print "body", c.body
-		#	error = error + c.body + ";"
-		raise AssertionError('Cannot create this resource: ' + error)
+		raise AssertionError('Cannot create this resource')
+	elif hasattr(x, 'status_code'):
+		if x.status_code < 200 or x.status_code > 299:
+			raise AssertionError('Cannot create this resource [%d] : %s' % (x.status_code, x.text))
 	return x
 
 # this might not be necessary now that the library functions can take dicts
@@ -67,32 +60,40 @@ def create_subscription(c, parent, ip, port):
 	uri = "http://%s:%d" % (ip, int(port))
 	x = c.create(parent, "subscription", {"notificationURI": uri, "notificationContentType": "wholeResource"})
 	if x == None:
-		print "error", c.error
-		raise AssertionError('Cannot create subscription')
+		raise AssertionError('Cannot create this subscription')
+	elif hasattr(x, 'status_code'):
+		if x.status_code < 200 or x.status_code > 299:
+			raise AssertionError('Cannot create subscription [%d] : %s' % (x.status_code, x.text))
 	return x
 
 def retrieve_resource(c, id):
 	"""Retrieve Resource"""
 	x = c.retrieve(id)
 	if x == None:
-		print "error", c.error
 		raise AssertionError('Cannot retrieve this resource')
+	elif hasattr(x, 'status_code'):
+		if x.status_code < 200 or x.status_code > 299:
+			raise AssertionError('Cannot retrieve this resource [%d] : %s' % (x.status_code, x.text))
 	return x
 
 def update_resource(c, id, attr):
 	"""Update Resource"""
 	x = c.update(id, attr)
 	if x == None:
-		print "error", c.error
 		raise AssertionError('Cannot update this resource')
+	elif hasattr(x, 'status_code'):
+		if x.status_code < 200 or x.status_code > 299:
+			raise AssertionError('Cannot update this resource [%d] : %s' % (x.status_code, x.text))
 	return x
 
 def delete_resource(c, id):
 	"""Delete Resource"""
 	x = c.delete(id)
 	if x == None:
-		print "error", c.error
-		raise AssertionError('Cannot delete resource')
+		raise AssertionError('Cannot delete this resource')
+	elif hasattr(x, 'status_code'):
+		if x.status_code < 200 or x.status_code > 299:
+			raise AssertionError('Cannot delete this resource [%d] : %s' % (x.status_code, x.text))
 	return x
 
 def id(x):
@@ -100,6 +101,9 @@ def id(x):
 
 def text(x):
 	return x.text
+
+def status_code(x):
+	return x.status_code
 
 def json(x):
 	return x.json()

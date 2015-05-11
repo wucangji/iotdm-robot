@@ -16,17 +16,23 @@ Basic HTTP CRUD Test
 	#
 	${r} =	Create Resource	${iserver}	"InCSE1"	${rt_ae}
 	${ae} =	Id	${r}
+	${status_code} =	Status Code	${r}
 	${text} =	Text	${r}
 	${json} = 	Json	${r}
 	${elapsed} =	Elapsed	${r}
-	${container} =	Create Resource	${iserver}	${ae}	${rt_container}
+	${r} =	Create Resource	${iserver}	${ae}	${rt_container}
 	${container} =	Id	${r}
+	${status_code} =	Status Code	${r}
 	${text} =	Text	${r}
 	${json} = 	Json	${r}
 	${elapsed} =	Elapsed	${r}
 	${attr} =	Create Dictionary	"con"	"101"
 	${r} =	Create Resource	${iserver}	${container}	${rt_contentInstance}	${attr}
 	${contentinstance} =	Id	${r}
+	${status_code} =	Status Code	${r}
 	${text} =	Text	${r}
 	${json} = 	Json	${r}
 	${elapsed} =	Elapsed	${r}
+	${r} =	Delete Resource	${iserver}	${contentInstance}
+	${r} =	Delete Resource	${iserver}	${container}
+	${r} =	Delete Resource	${iserver}	${ae}
