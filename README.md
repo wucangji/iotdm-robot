@@ -1,12 +1,13 @@
 # iotdm-robot
 
-To use these tests, you'll need to install the robotframework via:
+To use these tests, you'll need to install the robotframework and Requests library via:
 
 ```$ pip install robotframework```
+```$ pip install requests```
 
 To run the tests, type from the shell:
 
-```$ pybot iotdm.tsv```
+```$ pybot iotdm-mini.tsv```
 
 This will output three files:
 
