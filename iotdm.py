@@ -3,7 +3,7 @@ from datetime import timedelta
 
 zero = timedelta(0)
 
-ae = 2
+application = 2
 container = 3
 contentInstance = 4
 
@@ -27,7 +27,7 @@ cse_payload = '''
 }
 '''
 
-ae_payload = '''
+application_payload = '''
 {
   any:
   [
@@ -79,8 +79,8 @@ contentInstance_payload = '''
 
 def which_payload(restype):
     """Return a template payload for the known datatypes."""
-    if restype == ae:
-        return ae_payload
+    if restype == application:
+        return application_payload
     elif restype == container:
         return container_payload
     elif restype == contentInstance:
@@ -89,66 +89,64 @@ def which_payload(restype):
         return ""
 
 
-def _dig(r, k):
-    """Try to find the key 'k' in a response 'r'."""
+def find_key(response, key):
     try:
-        j = r.json()
-        id = j['any'][0][k]
-        return id
+        val = response.json()
+        return val['any'][0][key]
     except:
         return None
 
 
-def name(r):
-    """Return the resource name in the response 'r'."""
-    return _dig(r, "rn")
+def name(response):
+    """Return the resource name in the response."""
+    return find_key(response, "rn")
 
 
-def id(r):
-    """Return the resource id in the response 'r'."""
-    return _dig(r, "ri")
+def resid(response):
+    """Return the resource id in the response."""
+    return find_key(response, "ri")
 
 
-def parent(r):
-    """Return the parent resource id in the response 'r'."""
-    return _dig(r, "pi")
+def parent(response):
+    """Return the parent resource id in the response."""
+    return find_key(response, "pi")
 
 
-def content(r):
-    """Return the content the response 'r'."""
-    return _dig(r, "con")
+def content(response):
+    """Return the content the response."""
+    return find_key(response, "con")
 
 
-def restype(r):
-    """Return the resource type the response 'r'."""
-    return _dig(r, "rty")
+def restype(response):
+    """Return the resource type the response."""
+    return find_key(response, "rty")
 
 
-def status(r):
-    """Return the protocol status code in the response 'r'."""
+def status(response):
+    """Return the protocol status code in the response."""
     try:
-        return r.status_code
+        return response.status_code
     except:
         return None
 
 
-def headers(r):
-    """Return the protocol headers in the response 'r'."""
+def headers(response):
+    """Return the protocol headers in the response."""
     try:
-        return r.headers
+        return response.headers
     except:
         return None
 
 
-def error(r):
-    """Return the error string in the response 'r'."""
+def error(response):
+    """Return the error string in the response."""
     try:
-        return r.json()['error']
+        return response.json()['error']
     except:
         return None
 
 
-def normal(id):
+def normalize(id):
     if id is not None:
         if id[0] == "/":
             return id[1:]
@@ -175,16 +173,19 @@ def attr2str(attr):
     return content
 
 
-class new:
+class connect:
     def __init__(self, server="localhost", base='InCSE1',
                  auth=('admin', 'admin'), protocol="http"):
-        """Connect to a IoTDM server over-rideable defaults"""
+        """Connect to a IoTDM server."""
         self.s = requests.Session()
         self.s.auth = auth
         self.s.headers.update({'content-type': 'application/json'})
         self.timeout = (5, 5)
         self.payload = cse_payload % (base)
         self.headers = {
+            # Admittedly these are "magic values" but are required
+            # and until a proper defaulting initializer is in place
+            # are hard-coded.
             'content-type': 'application/json',
             'X-M2M-Origin': '//localhost:10000',
             'X-M2M-RI': '12345',
@@ -197,7 +198,7 @@ class new:
                                  data=self.payload, timeout=self.timeout)
 
     def create(self, parent, restype, name=None, attr=None):
-        """Create resource with parent of restype with name and option attr"""
+        """Create resource."""
         if parent is None:
             return None
         payload = which_payload(restype)
@@ -206,17 +207,17 @@ class new:
             self.headers['X-M2M-NM'] = None
         else:
             self.headers['X-M2M-NM'] = name
-        parent = normal(parent)
+        parent = normalize(parent)
         self.url = self.server + ":8282/%s?ty=%s&rcn=1" % (parent, restype)
         self.r = self.s.post(self.url, payload,
                              timeout=self.timeout, headers=self.headers)
         return self.r
 
     def retrieve(self, id):
-        """Retrieve resource ID"""
+        """Retrieve resource."""
         if id is None:
             return None
-        id = normal(id)
+        id = normalize(id)
         self.url = self.server + ":8282/%s?rcn=5&drt=2" % (id)
         self.headers['X-M2M-NM'] = None
         self.r = self.s.get(self.url, timeout=self.timeout,
@@ -227,14 +228,14 @@ class new:
         """Update resource attr"""
         if id is None:
             return None
-        id = normal(id)
+        id = normalize(id)
         return None
 
     def delete(self, id):
-        """Delete the resource with the provided ID"""
+        """Delete the resource with the provided ID."""
         if id is None:
             return None
-        id = normal(id)
+        id = normalize(id)
         self.url = self.server + ":8282/%s" % (id)
         self.headers['X-M2M-NM'] = None
         self.r = self.s.delete(self.url, timeout=self.timeout,
@@ -242,7 +243,7 @@ class new:
         return self.r
 
     def tree(self):
-        """Get the resource tree"""
+        """Get the resource tree."""
         self.url = self.server + op_tree
         self.r = self.s.get(self.url)
         return self.r

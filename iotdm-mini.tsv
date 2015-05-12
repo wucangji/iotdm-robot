@@ -15,14 +15,14 @@ Basic HTTP CRUD Test
 	${iserver} =	Connect To IoTDM	${httphost}	${httpuser}	${httppass}	http
 	#
 	${r} =	Create Resource	${iserver}	InCSE1	${rt_ae}
-	${ae} =	Id	${r}
+	${ae} =	ResId	${r}
 	${status_code} =	Status Code	${r}
 	${text} =	Text	${r}
 	${json} = 	Json	${r}
 	${elapsed} =	Elapsed	${r}
 	#
 	${r} =	Create Resource	${iserver}	${ae}	${rt_container}
-	${container} =	Id	${r}
+	${container} =	ResId	${r}
 	${status_code} =	Status Code	${r}
 	${text} =	Text	${r}
 	${json} = 	Json	${r}
@@ -30,7 +30,7 @@ Basic HTTP CRUD Test
 	#
 	${attr} =	Create Dictionary	con	101
 	${r} =	Create Resource	${iserver}	${container}	${rt_contentInstance}	${attr}
-	${contentinstance} =	Id	${r}
+	${contentinstance} =	ResId	${r}
 	${status_code} =	Status Code	${r}
 	${text} =	Text	${r}
 	${json} = 	Json	${r}

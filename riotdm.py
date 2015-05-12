@@ -3,13 +3,13 @@ import iotdm
 # import nparser
 # import time
 
-ae = iotdm.ae
+application = iotdm.application
 container = iotdm.container
 contentInstance = iotdm.contentInstance
 
 
 def connect_to_iotdm(host, user, pw, p):
-    return iotdm.new(host, base="InCSE1", auth=(user, pw), protocol=p)
+    return iotdm.connect(host, base="InCSE1", auth=(user, pw), protocol=p)
 
 '''
 def new_notification_server(ip, port):
@@ -43,13 +43,12 @@ def close_notification_server(n):
 '''
 
 
-def create_resource(c, parent, restype, a=None):
-    """Create Resource"""
+def create_resource(connection, parent, restype, a=None):
     restype = int(restype)
     if a is None:
-        x = c.create(parent, restype)
+        x = connection.create(parent, restype)
     else:
-        x = c.create(parent, restype, attr=a)
+        x = connection.create(parent, restype, attr=a)
     if x is None:
         raise AssertionError('Cannot create this resource')
     elif hasattr(x, 'status_code'):
@@ -62,10 +61,9 @@ def create_resource(c, parent, restype, a=None):
 # this might not be necessary now that the library functions can take dicts
 
 
-def create_subscription(c, parent, ip, port):
-    """Create Subscription"""
+def create_subscription(connection, parent, ip, port):
     uri = "http://%s:%d" % (ip, int(port))
-    x = c.create(parent, "subscription", {
+    x = connection.create(parent, "subscription", {
         "notificationURI": uri,
         "notificationContentType": "wholeResource"})
     if x is None:
@@ -77,9 +75,8 @@ def create_subscription(c, parent, ip, port):
     return x
 
 
-def retrieve_resource(c, id):
-    """Retrieve Resource"""
-    x = c.retrieve(id)
+def retrieve_resource(connection, resid):
+    x = connection.retrieve(resid)
     if x is None:
         raise AssertionError('Cannot retrieve this resource')
     elif hasattr(x, 'status_code'):
@@ -89,9 +86,8 @@ def retrieve_resource(c, id):
     return x
 
 
-def update_resource(c, id, attr):
-    """Update Resource"""
-    x = c.update(id, attr)
+def update_resource(connection, resid, attr):
+    x = connection.update(resid, attr)
     if x is None:
         raise AssertionError('Cannot update this resource')
     elif hasattr(x, 'status_code'):
@@ -101,9 +97,8 @@ def update_resource(c, id, attr):
     return x
 
 
-def delete_resource(c, id):
-    """Delete Resource"""
-    x = c.delete(id)
+def delete_resource(connection, resid):
+    x = connection.delete(resid)
     if x is None:
         raise AssertionError('Cannot delete this resource')
     elif hasattr(x, 'status_code'):
@@ -113,8 +108,8 @@ def delete_resource(c, id):
     return x
 
 
-def id(x):
-    return iotdm.id(x)
+def resid(x):
+    return iotdm.resid(x)
 
 
 def text(x):
@@ -131,12 +126,3 @@ def json(x):
 
 def elapsed(x):
     return x.elapsed.total_seconds()
-
-
-def invalid_create_resource(c, parent, restype, dictionary=None):
-    x = c.create(parent, restype, dictionary)
-    if x is None:
-        print "success error", c.error
-        return "pass"
-    else:
-        raise AssertionError('This resource should not be created!')
