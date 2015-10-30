@@ -28,52 +28,11 @@ resourcepayload = '''
 }
 '''
 
-ae_payload = '''
-{
-    "ae":{%s}
-}
-'''
-
-con_payload = '''
-{
-    "cnt":{%s}
-}
-'''
-
-cin_payload = '''
-{
-   "cin":{%s}
-}
-'''
-
-sub_payload = '''
-{
-    "sub":{%s}
-}
-'''
-
-
-def which_payload(restype):
-    """Choose the correct payload header for each resource."""
-    restype = int(restype)
-    if restype == 2:
-        return ae_payload
-    elif restype == 3:
-        return con_payload
-    elif restype == 4:
-        return cin_payload
-    elif restype == 23:
-        return sub_payload
-    else:
-        return resourcepayload
-
 
 def find_key(response, key):
     """Deserialize response, return value for key or None."""
-    dic = response.json()
-    key1 = list(dic.keys())
-    key1 = sorted(key1, reverse=True)
-    return dic.get(key1[0], None).get(key, None)
+    val = response.json()
+    return val.get(key, None)
 
 
 def name(response):
@@ -170,8 +129,8 @@ class connect:
         """Create resource."""
         if parent is None:
             return None
-        payload = which_payload(restype)
-        payload = payload % (attr)
+        payload = resourcepayload % (attr)
+        print payload
         self.headers['X-M2M-NM'] = name
         self.headers['content-type'] = 'application/\
             vnd.onem2m-res+json;ty=%s' % (restype)
@@ -187,8 +146,8 @@ class connect:
         """Create resource."""
         if parent is None:
             return None
-        payload = which_payload(restype)
-        payload = payload % (attr)
+        payload = resourcepayload % (attr)
+        print payload
         if name is None:
             self.headers['X-M2M-NM'] = None
         else:
@@ -235,8 +194,9 @@ class connect:
         if resourceURI is None:
             return None
         resourceURI = normalize(resourceURI)
-        payload = which_payload(restype)
-        payload = payload % (attr)
+        # print(payload)
+        payload = resourcepayload % (attr)
+        print payload
         if name is None:
             self.headers['X-M2M-NM'] = None
         else:
@@ -253,8 +213,9 @@ class connect:
         if resourceURI is None:
             return None
         resourceURI = normalize(resourceURI)
-        payload = which_payload(restype)
-        payload = payload % (attr)
+        # print(payload)
+        payload = resourcepayload % (attr)
+        print payload
         if name is None:
             self.headers['X-M2M-NM'] = None
         else:

@@ -28,7 +28,7 @@ Create the tree
 Connect And Create The Tree
     [Documentation]    Create a tree that contain AE/ container / contentInstance in different layers
     ${iserver} =    Connect To Iotdm    ${httphost}    ${httpuser}    ${httppass}    http
-    ${attr} =    Set Variable    "api":"jb","apn":"jb2","or":"http://hey/you"
+    ${attr} =    Set Variable    "api":"jb","apn":"jb2","or":"http://hey/you","rr":true
     Create Resource    ${iserver}    InCSE1    ${rt_ae}    ${attr}    AE1
     Create Resource    ${iserver}    InCSE1    ${rt_ae}    ${attr}    AE2
     Create Resource    ${iserver}    InCSE1    ${rt_ae}    ${attr}    AE3
