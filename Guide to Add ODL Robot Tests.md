@@ -51,7 +51,8 @@ To install it, paste this at a terminal:
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
-### `pip` and `easy install`
+### pip and easy install
+
 `pip` is one of the standard Python library installation tools.
 If you can't install a library or application via `pip`, try the same with `easy_install`.
 
@@ -343,4 +344,5 @@ integration/test/csit/suites/iotdm/basic
 ```
 
 ####Another usage of robot test is it can create a iotdm tree in one second.
+https://github.com/wucangji/iotdm-robot/blob/master/build%20the%20tree.robot  
 pybot -vCONTROLLER:127.0.0.1 build\ the\ tree.robot
