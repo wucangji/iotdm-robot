@@ -194,8 +194,8 @@ We'll mainly change files here as we develop new tests.
 To get this repo, do:
 
 ```
-git clone ssh://YOUR-ODL-USERNAME@git.opendaylight.org:29418/integration
-cd integration
+git clone ssh://YOUR-ODL-USERNAME@git.opendaylight.org:29418/integration/test
+cd test
 git review -s # this connects your local repo to gerrit
 ```
 

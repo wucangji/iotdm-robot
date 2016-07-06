@@ -1,4 +1,7 @@
 *.pyc
+*.class
 log.html
 output.xml
 report.html
+x
+.idea
