@@ -1,0 +1,80 @@
+***Settings***
+Library	riotdm
+Library	Collections
+
+***Variable***
+${httphost}	"localhost"
+${httpuser}	"admin"
+${httppass}	"admin"
+
+${resthost}	"localhost"
+${restuser}	"admin"
+${restpass}	"admin"
+
+${nip}	"localhost"
+${nport}	10000
+${ntimeout}	5
+
+***Test Cases***
+Basic HTTP CRUD Test
+	${iserver} =	Connect To IoTDM	${httphost}	${httpuser}	${httppass}	"http"
+	#
+	${ae} =	Create Resource	${iserver}	"InCSE1"	"AE"
+	${container} =	Create Resource	${iserver}	${ae}	"container"
+	${attr} =	Create Dictionary	"content"	"101"	"labels"	"my label"
+	${contentinstance} =	Create Resource	${iserver}	${container}	"contentInstance"	${attr}
+	${json} =	Retrieve Resource	${iserver}	${ae}
+	${json} =	Retrieve Resource	${iserver}	${container}
+	${json} =	Retrieve Resource	${iserver}	${contentinstance}
+	${attr} =	Create Dictionary	"labels"	"my ae label"
+	Update Resource	${iserver}	${ae}	${attr}
+	${attr} =	Create Dictionary	"labels"	"my container label"
+	Update Resource	${iserver}	${container}	${attr}
+	Delete Resource	${iserver}	${contentinstance}
+	Delete Resource	${iserver}	${container}
+	Delete Resource	${iserver}	${ae}
+
+Basic HTTP Subscription Test
+	${iserver} =	Connect To IoTDM	${httphost}	${httpuser}	${httppass}	"http"
+	${nserver} = 	New Notification Server	${nip}	${nport}
+	#
+	${nae} =	Create Resource	${iserver}	"InCSE1"	"AE"
+	${ncontainer} =	Create Resource	${iserver}	${nae}	"container"
+	Create Subscription	${iserver}	${ncontainer}	${nip}	${nport}
+	${attr} =	Create Dictionary	"content"	"my content"
+	${contentinstance} =	Create Resource	${iserver}	${ncontainer}	"contentInstance"	${attr}
+	${ndata} =	Read Notifications	${nserver}	${ntimeout}
+	Close Notification Server	${nserver}
+
+Basic RESTconf CRUD Test
+	${iserver} =	Connect To IoTDM	${resthost}	${restuser}	${restpass}	"restconf"
+	#
+	${ae} =	Create Resource	${iserver}	"InCSE1"	"AE"
+	${container} =	Create Resource	${iserver}	${ae}	"container"
+	${attr} =	Create Dictionary	"content"	"101"	"labels"	"my label"
+	${contentinstance} =	Create Resource	${iserver}	${container}	"contentInstance"	${attr}
+	${json} =	Retrieve Resource	${iserver}	${ae}
+	${json} =	Retrieve Resource	${iserver}	${container}
+	${json} =	Retrieve Resource	${iserver}	${contentinstance}
+	${attr} =	Create Dictionary	"labels"	"my ae label"
+	Update Resource	${iserver}	${ae}	${attr}
+	${attr} =	Create Dictionary	"labels"	"my container label"
+	Update Resource	${iserver}	${container}	${attr}
+	Delete Resource	${iserver}	${contentinstance}
+	Delete Resource	${iserver}	${container}
+	Delete Resource	${iserver}	${ae}
+
+
+Basic RESTconf Subscription Test
+	${iserver} =	Connect To IoTDM	${resthost}	${restuser}	${restpass}	"restconf"
+	${nserver} = 	New Notification Server	${nip}	${nport}
+	#
+	${nae} =	Create Resource	${iserver}	"InCSE1"	"AE"
+	${ncontainer} =	Create Resource	${iserver}	${nae}	"container"
+	Create Subscription	${iserver}	${ncontainer}	${nip}	${nport}
+	${attr} =	Create Dictionary	"content"	"my content"
+	${contentinstance} =	Create Resource	${iserver}	${ncontainer}	"contentInstance"	${attr}
+	${ndata} =	Read Notifications	${nserver}	${ntimeout}
+	Close Notification Server	${nserver}
+
+
